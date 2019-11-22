@@ -21,7 +21,7 @@ const Home = () => {
                 <WrappedSearchForm />
             </Card>
             {data.map((elem)=>{
-                return(<Card style={{ width: "100%", marginTop: 16 }} loading={false}>
+                return(<Card style={{ width: "100%", marginTop: 16 }} loading={true}>
                     <Meta
                       avatar={
                         <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />

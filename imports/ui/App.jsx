@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     background:'black',
     position:"fixed",
     color:"white",
+    zIndex:1000,
     fontSize:18,
     fontWeight:"bold",
     width:"100%",
@@ -44,6 +45,6 @@ const styles = StyleSheet.create({
   },
   content:{
     padding: '0 50px',
-    marginTop:15,
+    marginTop:80,
   }
 });
