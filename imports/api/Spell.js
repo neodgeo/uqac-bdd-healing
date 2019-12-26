@@ -1,12 +1,20 @@
 import SimpleSchema from 'simpl-schema';
 
+SimpleSchema.extendOptions(['index', 'unique'])
+
 const spellData = new Mongo.Collection('spellData');
 
 const spellSchema = new SimpleSchema({
     name:{
         type:String,
-        label:"Action",
-        max:"100"
+        label:"titre",
+        max:"100",
+        index:true
+    },
+    description:{
+        type:String,
+        label:"description",
+        index:true
     },
     creature:{
         type:Array,
@@ -55,6 +63,7 @@ const spellSchema = new SimpleSchema({
 })
 
 spellData.attachSchema(spellSchema);
+
 
 export {
     spellData,

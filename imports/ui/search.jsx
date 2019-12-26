@@ -74,11 +74,28 @@ class HorizontalLoginForm extends React.Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
-        console.log(text.get(), textPlace.get(), spellClass.get(), composante.get());
-        console.log(spellData.find().fetch())
-        var result = spellData.find({name: {$regex:text.get(), $options: 'i'}, components:{$in: composante.get()}, 'levels.class': {$in:spellClass.get()}}).fetch()
-        console.log(result)
+        // console.log('Received values of form: ', values);
+        // console.log(text.get(), textPlace.get(), spellClass.get(), composante.get());
+        // console.log(spellData.find().fetch())
+        var query = {components:{$in: composante.get()}}
+        if(spellClass.get().length > 0){
+          // console.log("here class")
+          query ['levels.class']={$in:spellClass.get()}
+        } 
+        if(textPlace.get().length == 2 ){
+          // console.log("here or")
+          query['$or'] = [{name: {$regex:text.get(), $options: 'i'}}, {description:{$regex:text.get(), $options: 'i'}}]
+        }else if(textPlace.get()[0] == 'description'){
+          // console.log("here desc")
+          query['description'] = {$regex:text.get(), $options: 'i'}
+        }else if(textPlace.get()[0] == 'titre'){
+          // console.log("here name")
+          query['name'] = {$regex:text.get(), $options: 'i'}
+        }
+
+        // console.log(query)
+        var result = spellData.find(query).fetch()
+        // console.log(result)
         result.forEach((elem)=>{
           var distinctCreature = [... new Set (elem.creature)]
           elem.creature = distinctCreature
@@ -86,7 +103,7 @@ class HorizontalLoginForm extends React.Component {
         Session.set('spellResult',result)
       }
     });
-    console.log(this.props.form.getFieldsValue())
+    // console.log(this.props.form.getFieldsValue())
   };
 
  
