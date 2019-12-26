@@ -11,11 +11,35 @@ const spellSchema = new SimpleSchema({
     creature:{
         type:Array,
         label:"List of creature that can cast this spell",
-        max:"100"
+        max:"100",
+        defaultValue:[]
     },
-    "$.creatures":{
+    "creature.$":{
         type:String,
         max:"100"
+    },
+    levels:{
+        type:Array,
+        label:"List of creature that can cast this spell",
+        max:"100"
+    },
+    "levels.$":{
+        type:Object,
+        label:"nested object",
+        blackbox:true
+    },
+    components:{
+        type:Array,
+        label:"List of componants of this spell",
+        max:"100"
+    },
+    "components.$":{
+        type:String,
+        max:"100"
+    },
+    spell_resistance:{
+        type:Boolean,
+        label:"if the spell have some resistance"
     },
     createdAt: {
         type: Date,

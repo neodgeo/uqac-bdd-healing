@@ -3,6 +3,11 @@ import React from 'react';
 import { Form, Icon, Input, Button, Select, Checkbox } from 'antd';
 
 import { StyleSheet, css } from 'aphrodite';
+import { spellData } from '../api/Spell';
+import { Session } from 'meteor/session';
+import { withTracker } from 'meteor/react-meteor-data';
+
+
 
 
 function hasErrors(fieldsError) {
@@ -11,8 +16,29 @@ function hasErrors(fieldsError) {
 
 const { Option } = Select;
 
-function onChange(value) {
+const text = new ReactiveVar('')
+const textPlace = new ReactiveVar(['titre','description'])
+const spellClass = new ReactiveVar('')
+const composante = new ReactiveVar([])
+
+function onChangeTextPlace(value) {
   console.log(`selected ${value}`);
+  textPlace.set(value)
+}
+
+function onChangeSpellClass(value) {
+  console.log(`selected ${value}`);
+  spellClass.set(value)
+}
+ 
+function onChangeComposante(value) {
+  console.log(`selected ${value}`);
+  composante.set(value)
+}
+
+function onChangeInput(e) {
+  console.log(`selected ${e.target.value}`);
+  text.set(e.target.value)
 }
 
 function onBlur() {
@@ -49,9 +75,21 @@ class HorizontalLoginForm extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
+        console.log(text.get(), textPlace.get(), spellClass.get(), composante.get());
+        console.log(spellData.find().fetch())
+        var result = spellData.find({name: {$regex:text.get(), $options: 'i'}, components:{$in: composante.get()}, 'levels.class': {$in:spellClass.get()}}).fetch()
+        console.log(result)
+        result.forEach((elem)=>{
+          var distinctCreature = [... new Set (elem.creature)]
+          elem.creature = distinctCreature
+        })
+        Session.set('spellResult',result)
       }
     });
+    console.log(this.props.form.getFieldsValue())
   };
+
+ 
 
 
 
@@ -65,32 +103,33 @@ class HorizontalLoginForm extends React.Component {
             <Input
               prefix={<Icon type="form" style={{ color: 'rgba(0,0,0,.25)' }} />}
               placeholder=""
+              onChange={onChangeInput}
             />
-            <Checkbox.Group options={textOption}></Checkbox.Group>
+            <Checkbox.Group options={textOption} onChange={onChangeTextPlace} defaultValue={['titre',"description"]}></Checkbox.Group>
         </Form.Item>
         <Form.Item>
             <Select
+                mode="multiple"
                 className={ css(styles.select)}
                 showSearch
                 style={{ width: 200 }}
                 placeholder="Select a class"
                 optionFilterProp="children"
-                onChange={onChange}
+                onChange={onChangeSpellClass}
                 onFocus={onFocus}
                 onBlur={onBlur}
                 onSearch={onSearch}
                 filterOption={(input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
             }>
-                <Option value="test">test</Option>
-                <Option value="Jiangsu">Jiangsu</Option>
+                {Session.get('classValues').map((elem)=> {return (<Option value={elem}>{elem}</Option>)})}
             </Select>
             <div>
-                Composante <Checkbox.Group options={composanteOption}></Checkbox.Group>
+                Composante <Checkbox.Group options={composanteOption} onChange={onChangeComposante}></Checkbox.Group>
             </div>
         </Form.Item>
         <Form.Item>
-            <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError())}>
+            <Button type="primary" htmlType="submit">
                 Find
             </Button>
         </Form.Item>
@@ -101,7 +140,31 @@ class HorizontalLoginForm extends React.Component {
 
 const WrappedSearchForm = Form.create({ name: 'search' })(HorizontalLoginForm);
 
-export default WrappedSearchForm
+export default WrappedSearchFormContainer = withTracker(()=>{
+  var classValues = Session.get('classValues')
+  if(classValues.length == 0) {
+      var valuesAll = []
+      const intervalQuery = Meteor.setInterval(()=> {
+        valuesAll = spellData.find().fetch()
+        if(valuesAll.length == 0){
+          return
+        }
+        var valuesClass = []
+        valuesAll.forEach((elem)=>{
+          elem.levels.forEach((elemLvl)=>{
+            valuesClass.push(elemLvl.class)
+          })
+        })
+        var final = [... new Set(valuesClass)]
+        Session.set('classValues', final)
+        Meteor.clearInterval(intervalQuery)
+      }, 1000)
+  }
+  console.log(classValues)
+  return{
+      classValues:classValues
+  }
+})(WrappedSearchForm);
 
 const styles = StyleSheet.create({
     select:{

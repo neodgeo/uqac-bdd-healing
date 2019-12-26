@@ -1,4 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import '../imports/api/Spell';
+
 // import Links from '/imports/api/links';
 
 // function insertLink(title, url) {

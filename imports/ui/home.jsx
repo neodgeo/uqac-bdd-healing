@@ -4,30 +4,45 @@ import { StyleSheet, css } from 'aphrodite';
 
 import { Switch, Card, Avatar } from 'antd';
 
+import { withTracker } from 'meteor/react-meteor-data';
+import { Session } from 'meteor/session';
+
+
 const { Meta } = Card;
 
 import WrappedSearchForm from './search';
 
-const data = [
-    {name:"name", creature:"this one"},
-    {name:"name", creature:"this second"},
-    {name:"name", creature:"this third"},
+var data = [
+    {name:"Search", creature:["this creature", "that creature", "thoses creatures"], description:"here you can find the description of the spell", levels:[{class:"wizard",level:2}],components:["F","V"]},
+    {name:"For", creature:["this creature", "that creature", "thoses creatures"], description:"here you can find the description of the spell", levels:[{class:"sorcery",level:4}],components:["F","S"]},
+    {name:"A spell", creature:["this creature", "that creature", "thoses creatures"], description:"here you can find the description of the spell", levels:[{class:"try",level:2}],components:["M","V"]},
 ]
 
-const Home = () => {
+const desc = (data)=> {
+    return (<div>
+        <div>{data.description}</div>
+        { data.creature ? <div>{data.creature.map((elem, index)=>{return (<span>{elem}{index == data.creature.length - 1 ? '' : ' - '}</span>)})}</div> : ''}
+        <div>{data.levels.map((elem, index)=>{return (<span>{elem.class} : {elem.level}{index == data.levels.length - 1 ? '' : ' - '}</span>)})}</div>
+        <div>{data.components.map((elem, index)=>{return (<span>{elem}{index == data.components.length - 1 ? '' : ', '}</span>)})}</div>
+        </div>)
+}
+
+
+const Home = ({dataDB}) => {
     return(
         <div>
             <Card title="Find your spell" style={{ width: "100%" }}>
                 <WrappedSearchForm />
             </Card>
-            {data.map((elem)=>{
-                return(<Card style={{ width: "100%", marginTop: 16 }} loading={true}>
+            {dataDB.map((elem)=>{
+                return(<Card style={{ width: "100%", marginTop: 16 }} loading={false}>
                     <Meta
                       avatar={
-                        <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+                        <Avatar src={"http://localhost:3000/701x1000_"+name.replace(' ', '%20')+".png"} />
+                        // <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
                       }
                       title={elem.name}
-                      description={elem.creature}
+                      description={desc(elem)}
                     />
                   </Card>);
             }
@@ -37,4 +52,11 @@ const Home = () => {
 };
 
 
-export default Home;
+export default HomeContainer = withTracker(()=>{
+    var dataDB = Session.get('spellResult')
+    if(dataDB.length == 0) dataDB = data
+    console.log(dataDB)
+    return{
+        dataDB:dataDB
+    }
+})(Home);

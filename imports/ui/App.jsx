@@ -5,9 +5,14 @@ import Home from './home'
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import { Layout, Menu, Breadcrumb } from 'antd';
 import { StyleSheet, css } from 'aphrodite';
+import { Session } from 'meteor/session';
+import { spellData } from '../api/Spell';
 
 
 const { Header, Content, Footer } = Layout;
+
+Session.set('spellResult',[])
+Session.set('classValues', [])
 
 const App = () => (
   <div>
