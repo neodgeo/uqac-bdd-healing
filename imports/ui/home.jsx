@@ -6,6 +6,8 @@ import { Switch, Card, Avatar } from 'antd';
 
 import { withTracker } from 'meteor/react-meteor-data';
 import { Session } from 'meteor/session';
+import { creatureData } from '../api/Creature';
+
 
 
 const { Meta } = Card;
@@ -21,7 +23,7 @@ var data = [
 const desc = (data)=> {
     return (<div>
         <div>{data.description}</div>
-        { data.creature ? <div>{data.creature.map((elem, index)=>{return (<span>{elem}{index == data.creature.length - 1 ? '' : ' - '}</span>)})}</div> : ''}
+        { data.creature ? <div>{data.creature.map((elem, index)=>{return (<a href={creatureData.findOne({name:elem.toLowerCase()}) ? creatureData.findOne({name:elem.toLowerCase()}).link : '#'} target="_blank"><span>{elem}{index == data.creature.length - 1 ? '' : ' - '}</span></a>)})}</div> : ''}
         <div>{data.levels.map((elem, index)=>{return (<span>{elem.class} : {elem.level}{index == data.levels.length - 1 ? '' : ' - '}</span>)})}</div>
         <div>{data.components.map((elem, index)=>{return (<span>{elem}{index == data.components.length - 1 ? '' : ', '}</span>)})}</div>
         </div>)

@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import '../imports/api/Spell';
+import '../imports/api/Creature';
+
 
 // import Links from '/imports/api/links';
 
